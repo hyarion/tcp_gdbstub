@@ -1,0 +1,18 @@
+
+## About
+
+TCP remote target GDB-stub server !>!<
+
+## Instructions
+
+Build with make
+
+Run like this:
+	$ ./passive_stub
+Or like this (if you want to specify port number):
+	$ ./passive_stub 8112
+
+Then connect with gdb:
+	$ gdb
+	(gdb) target remote localhost:8112
+
