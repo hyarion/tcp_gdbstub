@@ -40,37 +40,18 @@ union intval {
  * While we find nice hex chars, build an int.
  * Return number of chars processed.
  */
-static int hexTo_target_intptr_t(char const**const ptr, target_intptr_t* const intptrValue) {
+static int hexToInt(char const**const ptr, union intval* const intValuePtr) {
 	int numChars = 0;
 	int hexValue;
 
-	*intptrValue = 0;
+	intValuePtr->t_intlargest = 0;
 
 	while (**ptr) {
 		hexValue = hex(**ptr);
 		if (0 > hexValue) {
 			break;
 		}
-		*intptrValue = (*intptrValue << 4) | hexValue;
-		numChars++;
-		(*ptr)++;
-	}
-	return numChars;
-}
-
-static int hexTo_int(char const**const ptr, int *const intValue)
-{
-	int numChars = 0;
-	int hexValue;
-
-	*intValue = 0;
-
-	while (**ptr) {
-		hexValue = hex(**ptr);
-		if (0 > hexValue) {
-			break;
-		}
-		*intValue = (*intValue << 4) | hexValue;
+		intValuePtr->t_intlargest = (intValuePtr->t_intlargest << 4) | hexValue;
 		numChars++;
 		(*ptr)++;
 	}
@@ -181,18 +162,18 @@ void handlestub(struct stubdata * const s) {
 			}
 			break;
 		case 'C': { // continue with signal
-			int signal;
-			if (hexTo_int((char const**)&ptr, &signal)) {
-				setSignalToUse((unsigned char)signal);
+			union intval signal;
+			if (hexToInt((char const**)&ptr, &signal)) {
+				setSignalToUse(signal.t_uint8);
 			}
 			//break; <--- we don't want this as we want to use the 'c' definition
 		}
 		case 'c': { // continue execution
-			target_intptr_t addr;
-			if (!hexTo_target_intptr_t((char const**)&ptr, &addr)) {
-				addr = -1;
+			union intval addr;
+			if (!hexToInt((char const**)&ptr, &addr)) {
+				addr.t_intptr = -1;
 			}
-			continueExectuion(addr); // don't return until target halts
+			continueExectuion(addr.t_intptr); // don't return until target halts
 			createStopReplyPacket(s);
 			break;
 		}
