@@ -19,6 +19,23 @@ static int hex(const unsigned char ch) {
 	return -1;
 }
 
+union intval {
+	int8_t   t_int8;
+	int16_t  t_int16;
+	int32_t  t_int32;
+
+	uint8_t  t_uint8;
+	uint16_t t_uint16;
+	uint32_t t_uint32;
+
+	target_intmax_t      t_intmax;
+
+	target_intptr_t      t_intptr;
+	target_uintptr_t     t_uintptr;
+
+	target_intlargest_t  t_intlargest;
+	target_uintlargest_t t_uintlargest;
+};
 /*
  * While we find nice hex chars, build an int.
  * Return number of chars processed.
